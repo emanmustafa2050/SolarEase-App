@@ -5,10 +5,11 @@ import 'package:app/SignUp.dart';
 import 'package:app/api_objects/post.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 /*****************Global variables*******************/
-double scw = 0; 
+double scw = 0;
 double sch = 0;
 double t = 0;
 bool editpostloading = false;
@@ -94,13 +95,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
     scw = MediaQuery.of(context).size.width; // 60% of screen width
     sch = MediaQuery.of(context).size.height;
     t = MediaQuery.of(context).textScaleFactor;
-    return  WillPopScope(
+    return WillPopScope(
       onWillPop: () async {
         // Return false to disable the back button
         return false;
       },
       child: Scaffold(
-        
         body: Stack(
           children: [
             SingleChildScrollView(
@@ -259,8 +259,6 @@ class _PostDataFormState extends State<PostDataForm> {
         (cityChange == null || cityChange!.isEmpty);
   }
 
-
-
   /********************************Share button*******************************************/
   Widget sharebutton() {
     return Expanded(
@@ -300,8 +298,8 @@ class _PostDataFormState extends State<PostDataForm> {
                 setState(() {
                   validdata = false;
                 });
-              } 
-               /*************if there all data entered***************/
+              }
+              /*************if there all data entered***************/
               else {
                 widget.change("loading", "yes");
                 Post post = Post(
@@ -316,27 +314,24 @@ class _PostDataFormState extends State<PostDataForm> {
                     priceChange: priceChange!,
                     unitChange: unitChange!,
                     voltChange: voltChange);
-                /***********call api***********/          
+                /***********call api***********/
                 NoError = await post.createPost();
-       
+
                 widget.change("loading", "No");
                 /**********response done***********/
-                if(NoError=='Ok')
-                {
-                   setState(() {
-                  validdata = true;
-                });
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => MarketPlace()),
-                );
+                if (NoError == 'Ok') {
+                  setState(() {
+                    validdata = true;
+                  });
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => MarketPlace()),
+                  );
                 }
                 /***********response not done***********/
-                else{
-                  setState(() {      
-                  });
-                }  
-
+                else {
+                  setState(() {});
+                }
               }
             },
             style: ElevatedButton.styleFrom(
@@ -361,10 +356,7 @@ class _PostDataFormState extends State<PostDataForm> {
     );
   }
 
-
-
-
- /***************build red error message*****************/
+  /***************build red error message*****************/
   Widget builderrorinputtext() {
     return Center(
       child: Text(
@@ -441,8 +433,8 @@ class _PostDataFormState extends State<PostDataForm> {
               Conmponent(wid(357), hig(30), "Location", wid(250), wid(95),
                   widget.change, locationController),
               /****************City************************/
-              DropdownList(wid(357), hig(30), "City", wid(150), wid(95),
-                 cities, widget.change),
+              DropdownList(wid(357), hig(30), "City", wid(150), wid(95), cities,
+                  widget.change),
               /****************Description************************/
               Text(
                 "Description",
@@ -594,6 +586,18 @@ class Conmponent extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: w * 0.0106),
                 child: TextField(
+                  keyboardType: (lable == "Capacity" ||
+                          lable == "Price" ||
+                          lable == "Volume")
+                      ? TextInputType.number
+                      : TextInputType.text,
+                  inputFormatters: (lable == "Capacity" ||
+                          lable == "Price" ||
+                          lable == "Volume")
+                      ? <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ]
+                      : null,
                   maxLines: 1,
                   textAlign: TextAlign.left,
                   scrollPadding: EdgeInsets.symmetric(horizontal: 10.0),
